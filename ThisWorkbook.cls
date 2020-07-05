@@ -1,0 +1,126 @@
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+END
+Attribute VB_Name = "ThisWorkbook"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = True
+Sub Stocks()
+    Dim lastRow, lastRowBonus, Summary_Ticker As Integer
+    Dim Ticker, Yearly_Change, PercentageChange, CloseYearDif, TotalVolume, OpenYearDif, increase, decrease, maxvolume As Double
+    Dim ws As Worksheet
+    Dim rango1, rango2 As Range
+    
+    
+    
+    
+    Summary_Ticker = 2
+    Yearly_Change = 0
+    
+    For Each ws In Worksheets
+    
+    
+    
+    Cells(1, 9).Value = "Ticker"
+    Cells(1, 10).Value = "Yearly Change"
+    Cells(1, 11).Value = "Percentage Change"
+    Cells(1, 12).Value = "Total stock volume"
+    
+    
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row + 1
+    lastRowBonus = Cells(Rows.Count, "I").End(xlUp).Row + 1
+    
+    
+ 'Create a script that will loop through all the stocks for one year and output the following information.
+ 'The ticker symbol.
+  
+    
+    
+        For i = 2 To lastRow
+  
+     
+            If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+                    Ticker = Cells(i, 1).Value
+                    Range("I" & Summary_Ticker).Value = Ticker
+    
+            
+
+            
+'Yearly change from opening price at the beginning of a given year to the closing price at the end of that year.
+         
+        
+            CloseYearDif = Cells(i, 6).Value
+            OpenYearDif = Cells(i, 3).Value
+
+            Yearly_Change = OpenYearDif - CloseYearDif
+            Range("J" & Summary_Ticker).Value = Yearly_Change
+        
+                If Yearly_Change <= 0 Then
+                Range("J" & Summary_Ticker).Interior.ColorIndex = 3
+                ElseIf Yearly_Change > 0 Then
+                Range("J" & Summary_Ticker).Interior.ColorIndex = 4
+                End If
+        
+        
+      
+'The percent change from opening price at the beginning of a given year to the closing price at the end of that year.
+            PercentageChange = OpenYearDif / CloseYearDif
+            Range("K" & Summary_Ticker).Value = PercentageChange
+            Range("K" & Summary_Ticker).NumberFormat = "0.00%"
+      
+'The total stock volume of the stock.
+            TotalVolume = TotalVolume + Cells(i, 7).Value
+            Range("L" & Summary_Ticker).Value = TotalVolume
+      
+            Summary_Ticker = Summary_Ticker + 1
+      
+       
+       
+                TotalVolume = 0
+                OpenYearDif = 0
+                CloseYearDif = 0
+
+
+            Else
+       
+            TotalVolume = TotalVolume + Cells(i, 7).Value
+    
+            End If
+
+        Next i
+  
+            Cells(1, 14).Value = "Greatest % increase"
+            Cells(2, 14).Value = "Greatest % decrease"
+            Cells(3, 14).Value = "Greatest total volume"
+    
+    For a = 2 To lastRowBonus
+        Set rango1 = ws.Range("K2:K5000")
+        increase = Application.WorksheetFunction.Max(rango1)
+        decrease = Application.WorksheetFunction.Min(rango1)
+        
+        Cells(1, 16).Value = increase
+        Cells(1, 16).NumberFormat = "0.00%"
+        
+        Cells(2, 16).Value = decrease
+        Cells(2, 16).NumberFormat = "0.00%"
+        
+        Set rango2 = ws.Range("L2:L5000")
+        maxvolume = Application.WorksheetFunction.Max(rango2)
+        
+        Cells(3, 16).Value = maxvolume
+        
+        
+        
+        
+    Next a
+    
+        
+    
+    ws.Activate
+    
+    Next ws
+    
+    
+End Sub
